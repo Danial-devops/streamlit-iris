@@ -47,6 +47,7 @@ def user_input_features():
     smoking_status = st.sidebar.selectbox('Smoking Status', ['Formerly Smoked', 'Never Smoked', 'Smokes'])
     work_type = st.sidebar.selectbox('Work Type', ['Govt_job', 'Never_worked', 'Private', 'Self-employed', 'children'])
 
+    # Collecting all features in a dictionary
     data = {
         'gender': 1 if gender == 'Male' else 0,
         'hypertension': 1 if hypertension == 'Yes' else 0,
@@ -70,22 +71,27 @@ def user_input_features():
         'glucose_binned_Low': 1 if glucose_level == 'Low' else 0,
         'glucose_binned_Medium': 1 if glucose_level == 'Medium' else 0,
         'glucose_binned_High': 1 if glucose_level == 'High' else 0,
-        'glucose_binned_Very High': 1 if glucose_level == 'Very High' else 0
+        'glucose_binned_Very High': 1 if glucose_level == 'Very High' else 0,
+        'smoking_status_formerly smoked': 1 if smoking_status == 'Formerly Smoked' else 0,
+        'smoking_status_never smoked': 1 if smoking_status == 'Never Smoked' else 0,
+        'smoking_status_smokes': 1 if smoking_status == 'Smokes' else 0
     }
 
+    # Creating a DataFrame from the dictionary
     features = pd.DataFrame(data, index=[0])
 
     return features
 
 df = user_input_features()
 
-# Define the expected columns for the model
+# Define the expected columns for the model, including smoking status columns
 expected_columns = [
     'gender', 'hypertension', 'heart_disease', 'ever_married', 'Residence_type',
     'work_type_Govt_job', 'work_type_Never_worked', 'work_type_Private', 'work_type_Self-employed', 'work_type_children',
     'age_group_Child', 'age_group_Young Adult', 'age_group_Middle-aged', 'age_group_Senior', 'age_group_Elderly',
     'bmi_category_Underweight', 'bmi_category_Normal', 'bmi_category_Overweight', 'bmi_category_Obese',
-    'glucose_binned_Low', 'glucose_binned_Medium', 'glucose_binned_High', 'glucose_binned_Very High'
+    'glucose_binned_Low', 'glucose_binned_Medium', 'glucose_binned_High', 'glucose_binned_Very High',
+    'smoking_status_formerly smoked', 'smoking_status_never smoked', 'smoking_status_smokes'
 ]
 
 # Reorder the input DataFrame to match the model's expected columns
