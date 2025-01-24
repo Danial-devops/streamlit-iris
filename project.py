@@ -13,7 +13,7 @@ def user_input_features():
     gender = st.sidebar.selectbox('Gender', ['Male', 'Female'])
     
     # Age Group Selectbox
-    age_group = st.sidebar.selectbox('Age Group', ['Child', 'Young Adult', 'Middle-aged', 'Senior', 'Elderly'])
+    age_group = st.sidebar.selectbox('Age Group', ['Child (0-18)', 'Young Adult (18-35)', 'Middle-aged (35-50)', 'Senior (50-65)', 'Elderly (65-)'])
     
     # Hypertension
     hypertension = st.sidebar.selectbox('Hypertension', ['No', 'Yes'])
@@ -22,8 +22,9 @@ def user_input_features():
     
     ever_married = st.sidebar.selectbox('Ever Married', ['No', 'Yes'])
     
-    glucose_level = st.sidebar.selectbox('Glucose Level', ['Low', 'Medium', 'High', 'Very High'])
+    glucose_level = st.sidebar.selectbox('Glucose Level', ['Low (50-100)', 'Medium (100-150)', 'High (150-200)', 'Very High (200-)'])
     
+    # BMI Input: Either direct or through height and weight
     bmi_option = st.sidebar.radio('BMI Input Method', ['Direct Input', 'Calculate from Height/Weight'])
     
     if bmi_option == 'Direct Input':
@@ -33,8 +34,17 @@ def user_input_features():
         weight = st.sidebar.number_input('Weight (kg)', min_value=10, max_value=200, value=70)
         bmi = weight / ((height / 100) ** 2) 
 
+    if bmi < 18.5:
+        bmi_category = 'Underweight'
+    elif 18.5 <= bmi < 25:
+        bmi_category = 'Normal'
+    elif 25.0 <= bmi < 30:
+        bmi_category = 'Overweight'
+    else:
+        bmi_category = 'Obese'
+
     residence_type = st.sidebar.selectbox('Residence Type', ['Urban', 'Rural'])
-    smoking_status = st.sidebar.selectbox('Smoking Status', ['Unknown', 'Formerly Smoked', 'Never Smoked', 'Smokes'])
+    smoking_status = st.sidebar.selectbox('Smoking Status', ['Formerly Smoked', 'Never Smoked', 'Smokes'])
     work_type = st.sidebar.selectbox('Work Type', ['Govt_job', 'Never_worked', 'Private', 'Self-employed', 'children'])
 
     data = {'gender': 1 if gender == 'Male' else 0,
@@ -46,11 +56,15 @@ def user_input_features():
             'hypertension': 1 if hypertension == 'Yes' else 0,
             'heart_disease': 1 if heart_disease == 'Yes' else 0,
             'ever_married': 1 if ever_married == 'Yes' else 0,
-            'avg_glucose_level': 0 if glucose_level == 'Low' else (1 if glucose_level == 'Medium' else (2 if glucose_level == 'High' else 3)),
-            'bmi': bmi,
-            'Residence_type_Rural': 1 if residence_type == 'Rural' else 0,
-            'Residence_type_Urban': 1 if residence_type == 'Urban' else 0,
-            'smoking_status_Unknown': 1 if smoking_status == 'Unknown' else 0,
+            'glucose_binned_Low': 1 if glucose_level == 'Low' else 0,
+            'glucose_binned_Medium': 1 if glucose_level == 'Medium' else 0,
+            'glucose_binned_High': 1 if glucose_level == 'High' else 0,
+            'glucose_binned_Very_High': 1 if glucose_level == 'Very High' else 0,
+            'bmi_category_Underweight': 1 if bmi_category == 'Underweight' else 0,
+            'bmi_category_Normal': 1 if bmi_category == 'Normal' else 0,
+            'bmi_category_Overweight': 1 if bmi_category == 'Overweight' else 0,
+            'bmi_category_Obese': 1 if bmi_category == 'Obese' else 0,
+            'Residence_type': 1 if residence_type == 'Urban' else 0
             'smoking_status_formerly smoked': 1 if smoking_status == 'Formerly Smoked' else 0,
             'smoking_status_never smoked': 1 if smoking_status == 'Never Smoked' else 0,
             'smoking_status_smokes': 1 if smoking_status == 'Smokes' else 0,
