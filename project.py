@@ -47,52 +47,60 @@ def user_input_features():
     smoking_status = st.sidebar.selectbox('Smoking Status', ['Formerly Smoked', 'Never Smoked', 'Smokes'])
     work_type = st.sidebar.selectbox('Work Type', ['Govt_job', 'Never_worked', 'Private', 'Self-employed', 'children'])
 
-    # Construct the feature data dictionary, ensuring no target column (like 'stroke') is included
     data = {
         'gender': 1 if gender == 'Male' else 0,
-        'age_group_Child': 1 if age_group == 'Child (0-18)' else 0,
-        'age_group_Young Adult': 1 if age_group == 'Young Adult (18-35)' else 0,
-        'age_group_Middle-aged': 1 if age_group == 'Middle-aged (35-50)' else 0,
-        'age_group_Senior': 1 if age_group == 'Senior (50-65)' else 0,
-        'age_group_Elderly': 1 if age_group == 'Elderly (65-)' else 0,
         'hypertension': 1 if hypertension == 'Yes' else 0,
         'heart_disease': 1 if heart_disease == 'Yes' else 0,
         'ever_married': 1 if ever_married == 'Yes' else 0,
-        'glucose_binned_Low': 1 if glucose_level == 'Low (50-100)' else 0,
-        'glucose_binned_Medium': 1 if glucose_level == 'Medium (100-150)' else 0,
-        'glucose_binned_High': 1 if glucose_level == 'High (150-200)' else 0,
-        'glucose_binned_Very_High': 1 if glucose_level == 'Very High (200-)' else 0,
-        'bmi_category_Underweight': 1 if bmi_category == 'Underweight' else 0,
-        'bmi_category_Normal': 1 if bmi_category == 'Normal' else 0,
-        'bmi_category_Overweight': 1 if bmi_category == 'Overweight' else 0,
-        'bmi_category_Obese': 1 if bmi_category == 'Obese' else 0,
         'Residence_type': 1 if residence_type == 'Urban' else 0,
-        'smoking_status_formerly smoked': 1 if smoking_status == 'Formerly Smoked' else 0,
-        'smoking_status_never smoked': 1 if smoking_status == 'Never Smoked' else 0,
-        'smoking_status_smokes': 1 if smoking_status == 'Smokes' else 0,
         'work_type_Govt_job': 1 if work_type == 'Govt_job' else 0,
         'work_type_Never_worked': 1 if work_type == 'Never_worked' else 0,
         'work_type_Private': 1 if work_type == 'Private' else 0,
         'work_type_Self-employed': 1 if work_type == 'Self-employed' else 0,
-        'work_type_children': 1 if work_type == 'children' else 0
+        'work_type_children': 1 if work_type == 'children' else 0,
+        'age_group_Child': 1 if age_group == 'Child' else 0,
+        'age_group_Young Adult': 1 if age_group == 'Young Adult' else 0,
+        'age_group_Middle-aged': 1 if age_group == 'Middle-aged' else 0,
+        'age_group_Senior': 1 if age_group == 'Senior' else 0,
+        'age_group_Elderly': 1 if age_group == 'Elderly' else 0,
+        'bmi_category_Underweight': 1 if bmi_category == 'Underweight' else 0,
+        'bmi_category_Normal': 1 if bmi_category == 'Normal' else 0,
+        'bmi_category_Overweight': 1 if bmi_category == 'Overweight' else 0,
+        'bmi_category_Obese': 1 if bmi_category == 'Obese' else 0,
+        'glucose_binned_Low': 1 if glucose_level == 'Low' else 0,
+        'glucose_binned_Medium': 1 if glucose_level == 'Medium' else 0,
+        'glucose_binned_High': 1 if glucose_level == 'High' else 0,
+        'glucose_binned_Very High': 1 if glucose_level == 'Very High' else 0
     }
 
     features = pd.DataFrame(data, index=[0])
+
     return features
 
 df = user_input_features()
+
+# Define the expected columns for the model
+expected_columns = [
+    'gender', 'hypertension', 'heart_disease', 'ever_married', 'Residence_type',
+    'work_type_Govt_job', 'work_type_Never_worked', 'work_type_Private', 'work_type_Self-employed', 'work_type_children',
+    'age_group_Child', 'age_group_Young Adult', 'age_group_Middle-aged', 'age_group_Senior', 'age_group_Elderly',
+    'bmi_category_Underweight', 'bmi_category_Normal', 'bmi_category_Overweight', 'bmi_category_Obese',
+    'glucose_binned_Low', 'glucose_binned_Medium', 'glucose_binned_High', 'glucose_binned_Very High'
+]
+
+# Reorder the input DataFrame to match the model's expected columns
+df = df[expected_columns]
 
 st.subheader('User Input Parameters')
 st.write(df)
 
 # Load the pre-trained model
-model = joblib.load('best_logreg.pkl')
+model = joblib.load('best_logreg.pkl')  
 
 # Make predictions
 prediction = model.predict(df)
 prediction_proba = model.predict_proba(df)
 
-# Display the prediction and probability
 st.subheader('Prediction')
 st.write('Stroke' if prediction == 1 else 'No Stroke')
 
