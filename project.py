@@ -64,7 +64,7 @@ def user_input_features():
             'bmi_category_Normal': 1 if bmi_category == 'Normal' else 0,
             'bmi_category_Overweight': 1 if bmi_category == 'Overweight' else 0,
             'bmi_category_Obese': 1 if bmi_category == 'Obese' else 0,
-            'Residence_type': 1 if residence_type == 'Urban' else 0
+            'Residence_type': 1 if residence_type == 'Urban' else 0,
             'smoking_status_formerly smoked': 1 if smoking_status == 'Formerly Smoked' else 0,
             'smoking_status_never smoked': 1 if smoking_status == 'Never Smoked' else 0,
             'smoking_status_smokes': 1 if smoking_status == 'Smokes' else 0,
