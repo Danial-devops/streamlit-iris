@@ -15,17 +15,11 @@ def user_input_features():
     heart_disease = st.sidebar.selectbox('Heart Disease', ['No', 'Yes'])
     ever_married = st.sidebar.selectbox('Ever Married', ['No', 'Yes'])
     residence_type = st.sidebar.selectbox('Residence Type', ['Urban', 'Rural'])
-    
-    # Smoking Status
+
     smoking_status = st.sidebar.selectbox('Smoking Status', ['Formerly Smoked', 'Never Smoked', 'Smokes'])
-    
-    # Work Type
     work_type = st.sidebar.selectbox('Work Type', ['Govt_job', 'Never_worked', 'Private', 'Self-employed', 'children'])
+    age_group = st.sidebar.selectbox('Age Group', ['Child (0-18)', 'Young Adult (18-35)', 'Middle-aged (35-50)', 'Senior (50-65)', 'Elderly (65-)'])
     
-    # Age Group
-    age_group = st.sidebar.selectbox('Age Group', ['Child', 'Young Adult', 'Middle-aged', 'Senior', 'Elderly'])
-    
-    # BMI Input: Either direct or through height and weight
     bmi_option = st.sidebar.radio('BMI Input Method', ['Direct Input', 'Calculate from Height/Weight'])
     
     if bmi_option == 'Direct Input':
@@ -35,7 +29,6 @@ def user_input_features():
         weight = st.sidebar.number_input('Weight (kg)', min_value=10, max_value=200, value=70)
         bmi = weight / ((height / 100) ** 2) 
 
-    # BMI Category
     if bmi < 18.5:
         bmi_category = 'Underweight'
     elif 18.5 <= bmi < 25:
@@ -45,8 +38,7 @@ def user_input_features():
     else:
         bmi_category = 'Obese'
 
-    # Glucose Level
-    glucose_level = st.sidebar.selectbox('Glucose Level', ['Low', 'Medium', 'High', 'Very High'])
+    glucose_level = st.sidebar.selectbox('Glucose Level', ['Low (0-100)', 'Medium (100-150)', 'High (150-200)', 'Very High (200-)'])
     
     # Map input features to the model's expected format
     data = {'gender': 1 if gender == 'Male' else 0,
@@ -62,19 +54,19 @@ def user_input_features():
             'work_type_Private': 1 if work_type == 'Private' else 0,
             'work_type_Self-employed': 1 if work_type == 'Self-employed' else 0,
             'work_type_children': 1 if work_type == 'children' else 0,
-            'age_group_Child': 1 if age_group == 'Child' else 0,
-            'age_group_Young Adult': 1 if age_group == 'Young Adult' else 0,
-            'age_group_Middle-aged': 1 if age_group == 'Middle-aged' else 0,
-            'age_group_Senior': 1 if age_group == 'Senior' else 0,
-            'age_group_Elderly': 1 if age_group == 'Elderly' else 0,
+            'age_group_Child': 1 if age_group == 'Child (0-18)' else 0,
+            'age_group_Young Adult': 1 if age_group == 'Young Adult (18-35)' else 0,
+            'age_group_Middle-aged': 1 if age_group == 'Middle-aged (35-50)' else 0,
+            'age_group_Senior': 1 if age_group == 'Senior (50-65)' else 0,
+            'age_group_Elderly': 1 if age_group == 'Elderly (65-)' else 0,
             'bmi_category_Underweight': 1 if bmi_category == 'Underweight' else 0,
             'bmi_category_Normal': 1 if bmi_category == 'Normal' else 0,
             'bmi_category_Overweight': 1 if bmi_category == 'Overweight' else 0,
             'bmi_category_Obese': 1 if bmi_category == 'Obese' else 0,
-            'glucose_binned_Low': 1 if glucose_level == 'Low' else 0,
-            'glucose_binned_Medium': 1 if glucose_level == 'Medium' else 0,
-            'glucose_binned_High': 1 if glucose_level == 'High' else 0,
-            'glucose_binned_Very High': 1 if glucose_level == 'Very High' else 0}
+            'glucose_binned_Low': 1 if glucose_level == 'Low (0-100)' else 0,
+            'glucose_binned_Medium': 1 if glucose_level == 'Medium (100-150)' else 0,
+            'glucose_binned_High': 1 if glucose_level == 'High (150-200)' else 0,
+            'glucose_binned_Very High': 1 if glucose_level == 'Very High (200-)' else 0}
 
     features = pd.DataFrame(data, index=[0])
     return features
