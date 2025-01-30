@@ -3,70 +3,92 @@ import pandas as pd
 import joblib
 
 st.write("""
-# Stroke Prediction App
-This app predicts whether a person is likely to have a **stroke** based on various health parameters.
+# HDB Resale Price Prediction App
+This app predicts the **resale price** of an HDB flat based on various features.
 """)
 
 st.sidebar.header('User Input Parameters')
 
 def user_input_features():
-    gender = st.sidebar.selectbox('Gender', ['Male', 'Female'])
-    hypertension = st.sidebar.selectbox('Hypertension', ['No', 'Yes'])
-    heart_disease = st.sidebar.selectbox('Heart Disease', ['No', 'Yes'])
-    ever_married = st.sidebar.selectbox('Ever Married', ['No', 'Yes'])
-    residence_type = st.sidebar.selectbox('Residence Type', ['Urban', 'Rural'])
+    floor_area_sqm = st.sidebar.number_input('Floor Area (sqm)', min_value=30.0, max_value=200.0, value=80.0)
 
-    smoking_status = st.sidebar.selectbox('Smoking Status', ['Formerly Smoked', 'Never Smoked', 'Smokes'])
-    work_type = st.sidebar.selectbox('Work Type', ['Govt_job', 'Never_worked', 'Private', 'Self-employed', 'children'])
-    age_group = st.sidebar.selectbox('Age Group', ['Child (0-18)', 'Young Adult (18-35)', 'Middle-aged (35-50)', 'Senior (50-65)', 'Elderly (65-)'])
-    
-    bmi_option = st.sidebar.radio('BMI Input Method', ['Direct Input', 'Calculate from Height/Weight'])
-    
-    if bmi_option == 'Direct Input':
-        bmi = st.sidebar.slider('BMI', 10.0, 50.0, 25.0)
-    else:
-        height = st.sidebar.number_input('Height (cm)', min_value=50, max_value=250, value=170)
-        weight = st.sidebar.number_input('Weight (kg)', min_value=10, max_value=200, value=70)
-        bmi = weight / ((height / 100) ** 2) 
+    town = st.sidebar.selectbox('Town', [
+        'ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'BUKIT PANJANG', 'BUKIT TIMAH',
+        'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST',
+        'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG',
+        'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'
+    ])
 
-    if bmi < 18.5:
-        bmi_category = 'Underweight'
-    elif 18.5 <= bmi < 25:
-        bmi_category = 'Normal'
-    elif 25.0 <= bmi < 30:
-        bmi_category = 'Overweight'
-    else:
-        bmi_category = 'Obese'
+    flat_type = st.sidebar.selectbox('Flat Type', [
+        '1 ROOM', '2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE', 'MULTI-GENERATION'
+    ])
 
-    glucose_level = st.sidebar.selectbox('Glucose Level', ['Low (0-100)', 'Medium (100-150)', 'High (150-200)', 'Very High (200-)'])
-    
-    # Map input features to the model's expected format
-    data = {'gender': 1 if gender == 'Male' else 0,
-            'hypertension': 1 if hypertension == 'Yes' else 0,
-            'heart_disease': 1 if heart_disease == 'Yes' else 0,
-            'ever_married': 1 if ever_married == 'Yes' else 0,
-            'Residence_type': 1 if residence_type == 'Urban' else 0,
-            'smoking_status_formerly smoked': 1 if smoking_status == 'Formerly Smoked' else 0,
-            'smoking_status_never smoked': 1 if smoking_status == 'Never Smoked' else 0,
-            'smoking_status_smokes': 1 if smoking_status == 'Smokes' else 0,
-            'work_type_Govt_job': 1 if work_type == 'Govt_job' else 0,
-            'work_type_Never_worked': 1 if work_type == 'Never_worked' else 0,
-            'work_type_Private': 1 if work_type == 'Private' else 0,
-            'work_type_Self-employed': 1 if work_type == 'Self-employed' else 0,
-            'work_type_children': 1 if work_type == 'children' else 0,
-            'age_group_Child': 1 if age_group == 'Child (0-18)' else 0,
-            'age_group_Young Adult': 1 if age_group == 'Young Adult (18-35)' else 0,
-            'age_group_Middle-aged': 1 if age_group == 'Middle-aged (35-50)' else 0,
-            'age_group_Senior': 1 if age_group == 'Senior (50-65)' else 0,
-            'age_group_Elderly': 1 if age_group == 'Elderly (65-)' else 0,
-            'bmi_category_Underweight': 1 if bmi_category == 'Underweight' else 0,
-            'bmi_category_Normal': 1 if bmi_category == 'Normal' else 0,
-            'bmi_category_Overweight': 1 if bmi_category == 'Overweight' else 0,
-            'bmi_category_Obese': 1 if bmi_category == 'Obese' else 0,
-            'glucose_binned_Low': 1 if glucose_level == 'Low (0-100)' else 0,
-            'glucose_binned_Medium': 1 if glucose_level == 'Medium (100-150)' else 0,
-            'glucose_binned_High': 1 if glucose_level == 'High (150-200)' else 0,
-            'glucose_binned_Very High': 1 if glucose_level == 'Very High (200-)' else 0}
+    storey_range = st.sidebar.selectbox('Storey Range', [
+        '01 TO 03', '04 TO 06', '07 TO 09', '10 TO 12', '13 TO 15', '16 TO 18', '19 TO 21',
+        '22 TO 24', '25 TO 27', '28 TO 30', '31 TO 33', '34 TO 36', '37 TO 39', '40 TO 42',
+        '43 TO 45', '46 TO 48', '49 TO 51'
+    ])
+
+    flat_model = st.sidebar.selectbox('Flat Model', [
+        '2-room', '3Gen', 'Adjoined flat', 'Apartment', 'DBSS', 'Improved', 'Improved-Maisonette',
+        'Maisonette', 'Model A', 'Model A-Maisonette', 'Model A2', 'Multi Generation', 'New Generation',
+        'Premium Apartment', 'Premium Apartment Loft', 'Premium Maisonette', 'Simplified', 'Standard',
+        'Terrace', 'Type S1', 'Type S2'
+    ])
+
+    year = st.sidebar.selectbox('Year of Resale', [
+        2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025
+    ])
+
+    month_name = st.sidebar.selectbox('Month of Resale', [
+        'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+        'September', 'October', 'November', 'December'
+    ])
+
+    remaining_lease_binned = st.sidebar.selectbox('Remaining Lease (Binned)', [
+        '40-50', '51-60', '61-70', '71-80', '81-90', '91-100'
+    ])
+
+    # Create input dictionary matching model feature names
+    data = {'floor_area_sqm': floor_area_sqm}
+
+    for t in [
+        'ANG MO KIO', 'BEDOK', 'BISHAN', 'BUKIT BATOK', 'BUKIT MERAH', 'BUKIT PANJANG', 'BUKIT TIMAH',
+        'CENTRAL AREA', 'CHOA CHU KANG', 'CLEMENTI', 'GEYLANG', 'HOUGANG', 'JURONG EAST', 'JURONG WEST',
+        'KALLANG/WHAMPOA', 'MARINE PARADE', 'PASIR RIS', 'PUNGGOL', 'QUEENSTOWN', 'SEMBAWANG', 'SENGKANG',
+        'SERANGOON', 'TAMPINES', 'TOA PAYOH', 'WOODLANDS', 'YISHUN'
+    ]:
+        data[f'town_{t}'] = 1 if town == t else 0
+
+    for f in ['1 ROOM', '2 ROOM', '3 ROOM', '4 ROOM', '5 ROOM', 'EXECUTIVE', 'MULTI-GENERATION']:
+        data[f'flat_type_{f}'] = 1 if flat_type == f else 0
+
+    for s in [
+        '01 TO 03', '04 TO 06', '07 TO 09', '10 TO 12', '13 TO 15', '16 TO 18', '19 TO 21',
+        '22 TO 24', '25 TO 27', '28 TO 30', '31 TO 33', '34 TO 36', '37 TO 39', '40 TO 42',
+        '43 TO 45', '46 TO 48', '49 TO 51'
+    ]:
+        data[f'storey_range_{s}'] = 1 if storey_range == s else 0
+
+    for fm in [
+        '2-room', '3Gen', 'Adjoined flat', 'Apartment', 'DBSS', 'Improved', 'Improved-Maisonette',
+        'Maisonette', 'Model A', 'Model A-Maisonette', 'Model A2', 'Multi Generation', 'New Generation',
+        'Premium Apartment', 'Premium Apartment Loft', 'Premium Maisonette', 'Simplified', 'Standard',
+        'Terrace', 'Type S1', 'Type S2'
+    ]:
+        data[f'flat_model_{fm}'] = 1 if flat_model == fm else 0
+
+    for y in range(2015, 2026):
+        data[f'year_{y}'] = 1 if year == y else 0
+
+    for m in [
+        'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August',
+        'September', 'October', 'November', 'December'
+    ]:
+        data[f'month_name_{m}'] = 1 if month_name == m else 0
+
+    for rl in ['40-50', '51-60', '61-70', '71-80', '81-90', '91-100']:
+        data[f'remaining_lease_binned_{rl}'] = 1 if remaining_lease_binned == rl else 0
 
     features = pd.DataFrame(data, index=[0])
     return features
@@ -76,14 +98,11 @@ df = user_input_features()
 st.subheader('User Input Parameters')
 st.write(df)
 
-model = joblib.load('best_logreg.pkl')  
+# Load the trained regression model
+model = joblib.load('decision_tree_regression.pkl')
 
+# Predict resale price
 prediction = model.predict(df)
-prediction_proba = model.predict_proba(df)
 
-st.subheader('Prediction')
-st.write('Stroke' if prediction == 1 else 'No Stroke')
-
-st.subheader('Prediction Probability')
-st.write(f"Probability of Stroke: {prediction_proba[0][1]*100:.2f}%")
-st.write(f"Probability of No Stroke: {prediction_proba[0][0]*100:.2f}%")
+st.subheader('Predicted Resale Price')
+st.write(f"${prediction[0]:,.2f}")
